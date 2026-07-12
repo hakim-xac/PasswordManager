@@ -23,6 +23,19 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(PasswordManager
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+
+        settings/settings.h
+        settings/settings.cpp
+        settings/tags.h
+        settings/field_values.h
+        kas/type_identity.h
+        kas/concepts.h
+        kas/kas.h
+        config.json
+        kas/utils.h
+        kas/utils.cpp
+        resources.qrc
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET PasswordManager APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
