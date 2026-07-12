@@ -36,6 +36,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         kas/utils.cpp
         resources.qrc
         logindialog.h logindialog.cpp
+        kas/sha256.h kas/sha256.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

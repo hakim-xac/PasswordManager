@@ -3,6 +3,8 @@
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
+#include <QDebug>
+#include "kas/kas.h"
 
 namespace GlobalVariables {
 
