@@ -1,20 +1,21 @@
 #include "settings.h"
 #include "../kas/utils.h"
 #include <QStringView>
+#include <QMessageBox>
 
 namespace GlobalVariables
 {
-const QStringView APP_CONFIG_PATH { L"config.json" };
-const QStringView APP_NAME{ L"PasswordManager" };
-const QStringView ORGANIZATION_NAME{ L"KAS" };
-
+static const QStringView APP_CONFIG_PATH { L"config.json" };
+static const QStringView APP_NAME{ L"PasswordManager" };
+static const QStringView ORGANIZATION_NAME{ L"KAS" };
+static constexpr int NUMBER_ATTACHMENT_LOAD_SETTINGS { 2 };
 }
 
 namespace settings::detail {
 
 //-----------------
 
-bool
+static bool
 parseJsonConfig(const QJsonObject& json, FieldValues& fields)
 {
     if(! json.contains("db_name"))
@@ -30,19 +31,9 @@ parseJsonConfig(const QJsonObject& json, FieldValues& fields)
 
 //-----------------
 
-[[nodiscard]]
-bool
-initFieldValues( FieldValues& fields )
+static bool
+initFieldValues( const QString& config_path, FieldValues& fields )
 {
-    QCoreApplication::setOrganizationName(GlobalVariables::ORGANIZATION_NAME.toString());
-    QCoreApplication::setApplicationName(GlobalVariables::APP_NAME.toString());
-
-    const QString config_path {
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-        + "/"
-        + GlobalVariables::APP_CONFIG_PATH
-    };
-
     if (! QFile::exists(config_path))
     {
         // сохраняем из ресурсов
@@ -98,7 +89,24 @@ Settings::initSettingsSinglton() noexcept
 
 bool Settings::init(Settings& s)
 {
-    return detail::initFieldValues(s.m_fields);
+    QCoreApplication::setOrganizationName(GlobalVariables::ORGANIZATION_NAME.toString());
+    QCoreApplication::setApplicationName(GlobalVariables::APP_NAME.toString());
+
+    const QString config_path {
+        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+        + "/"
+            + GlobalVariables::APP_CONFIG_PATH
+    };
+
+    for(int i{}; i < GlobalVariables::NUMBER_ATTACHMENT_LOAD_SETTINGS; ++i)
+    {
+        const bool is_load_settings { detail::initFieldValues(config_path, s.m_fields) };
+        if(is_load_settings)
+            return true;
+        QFile::remove(config_path);
+        QMessageBox::warning(nullptr, "Warning", "Settings have been reset to default!");
+    }
+    return false;
 }
 
 //-----------------

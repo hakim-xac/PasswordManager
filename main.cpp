@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QMessageBox>
 #include <memory>
 #include "settings/settings.h"
 
@@ -17,7 +18,10 @@ int main(int argc, char *argv[])
 
     auto settings_uptr { settings::Settings::initSettingsSinglton() };
     if(! settings_uptr)
+    {
+        QMessageBox::critical(nullptr, "Error", "Failed to initialize settings!");
         return -1;
+    }
 
     std::swap(GlobalVariables::SETTINGS, settings_uptr);
 
