@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "settings/settings.h"
+#include "kas/aes256.h"
 
 #include <QSqlError>
 #include <QSqlQuery>
@@ -76,13 +77,16 @@ loadFromDatabase(QSqlDatabase& db, QTableWidget* table_widget)
     while (table_widget->rowCount() > 0)
         table_widget->removeRow(0);
 
+    const kas::crypto::Aes256 aes {
+        SETTINGS().get<settings::tags::private_key_t>(),
+        SETTINGS().get<settings::tags::salt_t>()
+    };
     int row {};
-
     while (query.next())
     {
         const int id { query.value(0).toInt() };
         auto description { query.value(1).toString() };
-        auto password { query.value(2).toString() };
+        auto password { aes.decrypt( query.value(2).toString()) };
 
         table_widget->insertRow(row);
 
@@ -132,6 +136,12 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
         return false;
     }
 
+    int data_base_counter {};
+    const kas::crypto::Aes256 aes {
+        SETTINGS().get<settings::tags::private_key_t>(),
+        SETTINGS().get<settings::tags::salt_t>()
+    };
+
     for (int row{}; row < table_widget->rowCount(); ++row)
     {
         QTableWidgetItem* id_item { table_widget->item(row, 0) };
@@ -145,7 +155,7 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
 
         query.addBindValue(id_item ? id_item->text().toInt() : row + 1);
         query.addBindValue(desc_item->text());
-        query.addBindValue(pass_item->text());
+        query.addBindValue( aes.encrypt(pass_item->text()));
 
         if (!query.exec())
         {
@@ -153,6 +163,7 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
             db.rollback();
             return false;
         }
+        ++data_base_counter;
     }
 
     if (!db.commit())
@@ -162,7 +173,7 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
         return false;
     }
 
-    qDebug() << "Saved" << table_widget->rowCount() << "records to database";
+    qDebug() << "Saved" << data_base_counter << "records to database";
     return true;
 }
 
@@ -291,11 +302,28 @@ void MainWindow::onItemChanged(QTableWidgetItem* item)
 void MainWindow::on_pushButton_2_clicked()
 {
     const int row { ui->tableWidget->currentRow() };
+    if(row < 0)
+        return;
+
+    const int select_id {
+        [&]{
+            int error_id { -1 };
+            QTableWidgetItem* last_id_item { ui->tableWidget->item(row, 0) };
+            if(! last_id_item )
+                return error_id;
+            bool success{};
+            int current_id { last_id_item->text().toInt(&success) };
+            return success ? current_id : error_id;
+        }()
+    };
+
+    if(select_id < 0)
+        return;
 
     const auto res { QMessageBox::question(
         this,
         "Удаление пароля",
-        "Вы действительно хотите удалить пароль?",
+        "Вы действительно хотите удалить пароль c id = '" + QString::number(select_id) + "'?",
         QMessageBox::Ok | QMessageBox::Cancel,
         QMessageBox::Cancel
         ) };

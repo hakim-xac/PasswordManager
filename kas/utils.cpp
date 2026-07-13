@@ -3,6 +3,7 @@
 #include <QStringView>
 #include <QDebug>
 #include <QJsonDocument>
+#include <QRandomGenerator>
 
 namespace kas::utils {
 
@@ -90,6 +91,19 @@ bool saveJsonToFile(QJsonObject json, const QString& file_path)
         return false;
     }
     return true;
+}
+
+//-----------------
+
+QByteArray
+generateRandomBytes(int length)
+{
+    QByteArray bytes;
+    bytes.resize(length);
+
+    for (int i{}; i < length; ++i)
+        bytes[i] = static_cast<std::uint8_t>(QRandomGenerator::global()->bounded(256));
+    return bytes;
 }
 
 //-----------------

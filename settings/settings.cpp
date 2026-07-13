@@ -44,7 +44,7 @@ initFieldValues( const QString& config_path, FieldValues& fields )
     if(! json_opt)
         return false;
 
-    return fields.parseJsonConfig(json_opt.value());
+    return fields.initFieldValues(json_opt.value());
 }
 
 //-----------------
