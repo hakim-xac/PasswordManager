@@ -1,17 +1,18 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include "./password_delegate.h"
 #include "settings/settings.h"
 #include "kas/aes256.h"
 
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
+#include <QLineEdit>
 
 extern const settings::Settings& SETTINGS();
 
 namespace detail
 {
-
 //-----------------
 
 QString getDBAbsolutePath()
@@ -223,9 +224,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setColumnWidth(1, 400);
     ui->tableWidget->setColumnWidth(2, 200);
     ui->tableWidget->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidget->setEditTriggers(QAbstractItemView::AnyKeyPressed);
+    ui->tableWidget->setEditTriggers(QAbstractItemView::DoubleClicked);
     ui->tableWidget->verticalHeader()->setVisible(false);
     setMinimumWidth(700);
+
+    ui->tableWidget->setItemDelegateForColumn(2, new PasswordDelegate(this));
 
     if (! detail::initDataBase(m_db))
     {

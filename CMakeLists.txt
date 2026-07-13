@@ -40,6 +40,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         settings/field_values.cpp
         kas/base64.h kas/base64.cpp
         kas/aes256.h kas/aes256.cpp
+        password_delegate.h password_delegate.cpp
 
 
     )
