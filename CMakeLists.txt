@@ -38,6 +38,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         AuthDialog.h AuthDialog.cpp
         kas/sha256.h kas/sha256.cpp
         settings/field_values.cpp
+        kas/base64.h kas/base64.cpp
 
 
     )
