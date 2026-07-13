@@ -47,8 +47,42 @@
      <height>22</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Действия с данными</string>
+    </property>
+    <addaction name="action"/>
+    <addaction name="action_2"/>
+    <addaction name="separator"/>
+    <addaction name="action_4"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="action">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::DocumentSave"/>
+   </property>
+   <property name="text">
+    <string>сохранить в бд</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::SystemReboot"/>
+   </property>
+   <property name="text">
+    <string>получить из бд</string>
+   </property>
+  </action>
+  <action name="action_4">
+   <property name="icon">
+    <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+   </property>
+   <property name="text">
+    <string>очистить таблицу</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

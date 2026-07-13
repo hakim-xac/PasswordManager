@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QTableWidgetItem>
+#include <QSqlDatabase>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -25,7 +26,14 @@ private slots:
 
     void onItemChanged(QTableWidgetItem* item);
 
+    void on_action_triggered();
+
+    void on_action_2_triggered();
+
+    void on_action_4_triggered();
+
 private:
     Ui::MainWindow *ui;
+    QSqlDatabase m_db;
 };
 #endif // MAINWINDOW_H
