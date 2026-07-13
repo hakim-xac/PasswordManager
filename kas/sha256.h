@@ -16,6 +16,7 @@ public:
     static QString hash(const QString& data);
     static QByteArray hash(const QByteArray& data);
     static bool verifyPassword(const QString& password, const QString& stored_hash);
+    static bool verifyPasswordWithSalt(const QString& password, const QString& salt, const QString& stored_hash);
     static QString hashWithSalt(const QString& data, const QString& salt);
 
     void reset();

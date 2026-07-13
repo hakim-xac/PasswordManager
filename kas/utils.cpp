@@ -55,7 +55,6 @@ bool saveToFilesystem(const QString& filename, const QByteArray& data)
     }
 
     const auto write_bytes { file.write(data) };
-    file.close();
 
     if(write_bytes != data.size())
     {
@@ -65,11 +64,33 @@ bool saveToFilesystem(const QString& filename, const QByteArray& data)
         qWarning() << "data.size(): " << data.size();
         return false;
     }
-
-    qDebug() << "Config copied from resources to:" << filename;
     return true;
 }
 
+//-----------------
+
+bool saveJsonToFile(QJsonObject json, const QString& file_path)
+{
+    QFile file{ file_path };
+    if (!file.open(QIODevice::WriteOnly))
+    {
+        qWarning() << "Cannot open file for writing:" << file_path;
+        return false;
+    }
+
+    QJsonDocument doc { std::move(json) };
+    QByteArray buffer { std::move(doc).toJson(QJsonDocument::Indented) };
+    const auto buffer_data { buffer.size() };
+    const auto write_bytes { file.write(std::move(buffer)) };
+    if( write_bytes != buffer_data)
+    {
+        qWarning() << "Failed to write all data to file:" << file_path;
+        qDebug() << "write_bytes: " << write_bytes;
+        qDebug() << "buffer_data: " << buffer_data;
+        return false;
+    }
+    return true;
+}
 
 //-----------------
 }

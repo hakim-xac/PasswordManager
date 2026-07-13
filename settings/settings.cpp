@@ -2,6 +2,7 @@
 #include "../kas/utils.h"
 #include <QStringView>
 #include <QMessageBox>
+#include <QDebug>
 
 namespace GlobalVariables
 {
@@ -12,22 +13,6 @@ static constexpr int NUMBER_ATTACHMENT_LOAD_SETTINGS { 2 };
 }
 
 namespace settings::detail {
-
-//-----------------
-
-static bool
-parseJsonConfig(const QJsonObject& json, FieldValues& fields)
-{
-    if(! json.contains("db_name"))
-    {
-        qWarning() << "! json.contains('db_name')";
-        return false;
-    }
-
-    fields.db_name = json["db_name"].toString();
-
-    return true;
-}
 
 //-----------------
 
@@ -51,13 +36,15 @@ initFieldValues( const QString& config_path, FieldValues& fields )
 
         if( ! kas::utils::saveToFilesystem(config_path, data))
             return false;
+
+        qDebug() << "Config copied from resources to:" << config_path;
     }
 
     const auto json_opt { kas::utils::getJsonFromFile(config_path) };
     if(! json_opt)
         return false;
 
-    return parseJsonConfig(json_opt.value(), fields);
+    return fields.parseJsonConfig(json_opt.value());
 }
 
 //-----------------
@@ -68,7 +55,7 @@ namespace settings {
 //-----------------
 
 std::unique_ptr<Settings>
-Settings::initSettingsSinglton() noexcept
+Settings::makeSettings() noexcept
 {
     try
     {
@@ -111,9 +98,24 @@ bool Settings::init(Settings& s)
 
 //-----------------
 
-void Settings::print( QDebug& deb) const
+void Settings::print() const
 {
+    auto deb { qDebug() };
     m_fields.print(deb);
+}
+
+//-----------------
+
+bool
+Settings::saveConfig()
+{
+    const QString config_path {
+        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+        + "/"
+            + GlobalVariables::APP_CONFIG_PATH
+    };
+
+    return kas::utils::saveJsonToFile(m_fields.toJson(), config_path);
 }
 
 //-----------------

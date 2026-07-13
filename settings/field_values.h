@@ -10,20 +10,20 @@ namespace settings::detail {
 struct FieldValues final{
 
     // public interface
-    inline const QString& get(kas::type_identity<tags::db_name_t>) const & { return db_name; }
+    const QString& get(kas::type_identity<tags::db_name_t>) const &;
+    const QString& get(kas::type_identity<tags::public_hash_key_t>) const &;
+    void set(QString value, kas::type_identity<tags::public_hash_key_t>) &;
 
-    ///
-    /// \brief print
-    /// \param out
-    ///
-    inline void print( QDebug& out ) const
-    {
-        auto deb { qDebug() };
-        deb << "Application settings:\n";
-        deb << "\t" << "db_name:" << db_name << "\n";
-    }
+    const QString& get(kas::type_identity<tags::salt_t>) const &;
 
+    void print( QDebug& deb ) const;
+    QJsonObject toJson();
+    bool parseJsonConfig(const QJsonObject& json);
+
+public:
     QString db_name;
+    QString public_hash_key;
+    QString salt;
 };
 
 }

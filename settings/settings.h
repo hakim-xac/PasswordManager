@@ -10,8 +10,8 @@ namespace settings {
 
 class Settings final{
 public:
-
-    static std::unique_ptr<Settings> initSettingsSinglton() noexcept;
+    Settings() = default;
+    static std::unique_ptr<Settings> makeSettings() noexcept;
     bool init(Settings&);
 
     template < typename TagID >
@@ -20,8 +20,11 @@ public:
     template < typename TagID, typename T >
     void set( T&& );
 
-    void print( QDebug& ) const;
+    void print() const;
+
+    bool saveConfig();
 private:
+
     detail::FieldValues m_fields;
 };
 }
@@ -42,7 +45,7 @@ Settings::get() const&
 template < typename TagID, typename T >
 void Settings::set( T&& value )
 {
-    // m_fields.set(std::forward<T>(value), kas::type_identity<TagID>{});
+    m_fields.set(std::forward<T>(value), kas::type_identity<TagID>{});
 }
 
 //-----------------

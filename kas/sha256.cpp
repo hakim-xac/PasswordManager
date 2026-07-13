@@ -339,6 +339,14 @@ Sha256::verifyPassword(const QString& password, const QString& stored_hash)
 
 //-----------------
 
+bool
+Sha256::verifyPasswordWithSalt(const QString& password,const QString& salt, const QString& stored_hash)
+{
+    return hashWithSalt(password, salt) == stored_hash;
+}
+
+//-----------------
+
 QString
 Sha256::hashWithSalt(const QString& data, const QString& salt)
 {

@@ -1,3 +1,4 @@
 {
-    "db_name" : "passwords.db"
+    "db_name" : "passwords.db",
+    "public_hash_key" : ""
 }

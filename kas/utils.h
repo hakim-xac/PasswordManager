@@ -11,6 +11,7 @@ namespace kas::utils {
 std::optional<QByteArray> fileGetContents(const QString& filename);
 std::optional<QJsonObject> getJsonFromFile(const QString& filename);
 bool saveToFilesystem(const QString& filename, const QByteArray& data);
+bool saveJsonToFile(QJsonObject json, const QString& file_path);
 
 }
 #endif // UTILS_H

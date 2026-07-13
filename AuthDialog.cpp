@@ -1,26 +1,31 @@
-#include "logindialog.h"
+#include "AuthDialog.h"
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QDebug>
 #include "kas/kas.h"
+#include "settings/settings.h"
 
 namespace GlobalVariables {
 
 static constexpr int NUMBER_LOGIN_ATTACHMENT{ 5 };
 }
+
+extern const settings::Settings& SETTINGS();
+
 namespace detail {
 
 //-----------------
 
 static bool
-checkInputData(const QString& login, const QString& password)
+verify( const QString& password)
 {
-    static int n{};
-    n++;
-
-    return n > 7;
+    return kas::crypto::Sha256::verifyPasswordWithSalt(
+        password,
+        SETTINGS().get<settings::tags::salt_t>(),
+        SETTINGS().get<settings::tags::public_hash_key_t>()
+        );
 }
 
 //-----------------
@@ -29,39 +34,34 @@ checkInputData(const QString& login, const QString& password)
 
 //-----------------
 
-LoginDialog::LoginDialog(QWidget *parent) :
+AuthDialog::AuthDialog(QWidget *parent) :
     QDialog{ parent },
-    m_login_edit{ new QLineEdit },
-    m_password_edit{ new QLineEdit },
+    m_key_edit{ new QLineEdit },
     m_attempts { GlobalVariables::NUMBER_LOGIN_ATTACHMENT }
 {
     setWindowTitle("Аутентификация");
     setFixedSize(300, 150);
     auto *layout { new QVBoxLayout(this) };
-    layout->addWidget( new QLabel { "Логин:" });
-    layout->addWidget( m_login_edit);
-    layout->addWidget( new QLabel { "Пароль:" });
-    m_password_edit->setEchoMode(QLineEdit::Password);
-    layout->addWidget( m_password_edit);
+    layout->addWidget( new QLabel { "Введите ключ доступа:" });
+    m_key_edit->setEchoMode(QLineEdit::Password);
+    layout->addWidget( m_key_edit);
 
     auto* buttons { new QDialogButtonBox { QDialogButtonBox::Ok | QDialogButtonBox::Cancel } };
-    connect(buttons, &QDialogButtonBox::accepted, this, &LoginDialog::onLoginClicked);
+    connect(buttons, &QDialogButtonBox::accepted, this, &AuthDialog::onAuthClicked);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
     layout->addWidget(buttons);
 
-    connect(m_login_edit, &QLineEdit::returnPressed, [this] { m_password_edit->setFocus(); });
-    connect(m_password_edit, &QLineEdit::returnPressed, this, &LoginDialog::onLoginClicked);
+    connect(m_key_edit, &QLineEdit::returnPressed, this, &AuthDialog::onAuthClicked);
 
-    m_login_edit->setFocus();
+    m_key_edit->setFocus();
 }
 
 //-----------------
 
-
-void LoginDialog::onLoginClicked()
+void AuthDialog::onAuthClicked()
 {
-    if(detail::checkInputData(m_login_edit->text(), m_password_edit->text()))
+    if(detail::verify(m_key_edit->text()))
     {
         accept();
         return;
@@ -88,24 +88,8 @@ void LoginDialog::onLoginClicked()
         }.arg(m_attempts--)
     );
 
-    m_password_edit->clear();
-    m_password_edit->setFocus();
-}
-
-//-----------------
-
-QString
-LoginDialog::getLogin() const
-{
-    return m_login_edit->text();
-}
-
-//-----------------
-
-QString
-LoginDialog::getPassword() const
-{
-    return m_password_edit->text();
+    m_key_edit->clear();
+    m_key_edit->setFocus();
 }
 
 //-----------------
