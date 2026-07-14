@@ -36,11 +36,11 @@
 <img src="images/remove.PNG" alt="-" style="width: 500px;"/>
 <img src="images/main_after_remove.PNG" alt="-" style="width: 500px;"/>
 
-Редактирование пароля:<br/>
-<img src="images/edit.PNG" alt="-" style="width: 500px;"/>
-
 Меню:<br/>
 <img src="images/menu.PNG" alt="-" style="width: 500px;"/>
+
+Редактирование пароля:<br/>
+<img src="images/edit.PNG" alt="-" style="width: 500px;"/>
 
 Окно после сохранения данных в бд:<br/>
 <img src="images/after_save.PNG" alt="-" style="width: 500px;"/>
