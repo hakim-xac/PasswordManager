@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "ui/mainwindow.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -6,7 +6,7 @@
 #include <QInputDialog>
 #include <memory>
 #include "settings/settings.h"
-#include "AuthDialog.h"
+#include "ui/authdialog.h"
 #include "kas/sha256.h"
 #include "kas/base64.h"
 

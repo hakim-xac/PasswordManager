@@ -14,8 +14,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
+
+
         mainwindow.ui
 )
 
@@ -35,13 +35,17 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         kas/utils.h
         kas/utils.cpp
         resources.qrc
-        AuthDialog.h AuthDialog.cpp
+
         kas/sha256.h kas/sha256.cpp
         settings/field_values.cpp
         kas/base64.h kas/base64.cpp
         kas/aes256.h kas/aes256.cpp
-        password_delegate.h password_delegate.cpp
+
         kas/SafeData.h
+        ui/authdialog.h ui/authdialog.cpp
+        ui/password_delegate.h ui/password_delegate.cpp
+        ui/mainwindow.h ui/mainwindow.cpp
+
 
 
     )

@@ -1,10 +1,10 @@
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
-#include "./password_delegate.h"
-#include "settings/settings.h"
-#include "kas/aes256.h"
-#include "kas/base64.h"
-#include "kas/SafeData.h"
+#include "../ui_mainwindow.h"
+#include "password_delegate.h"
+#include "../settings/settings.h"
+#include "../kas/aes256.h"
+#include "../kas/base64.h"
+#include "../kas/SafeData.h"
 
 #include <QSqlError>
 #include <QSqlQuery>
@@ -77,8 +77,8 @@ bool isEmptyIdList()
 QString getDBAbsolutePath()
 {
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
-           + "/"
-           + SETTINGS().get<settings::tags::db_name_t>();
+    + "/"
+        + SETTINGS().get<settings::tags::db_name_t>();
 }
 
 //-----------------
@@ -143,7 +143,7 @@ loadFromDatabase(QSqlDatabase& db, QTableWidget* table_widget)
             SETTINGS().get<settings::tags::salt_t>() +
             SETTINGS().get<settings::tags::application_author_t>() +
             SETTINGS().get<settings::tags::application_name_t>()
-        )
+            )
     };
     int row {};
     while (query.next())
@@ -291,8 +291,8 @@ void updateStatusBar(QStatusBar * status_bar)
         status_bar->setVisible(true);
         status_bar->showMessage(
             QString{ "Внимание! У вас есть не сохраненные записи в количестве - %1 шт."}
-            .arg(size_list)
-);
+                .arg(size_list)
+            );
     }
     else
         status_bar->showMessage("Изменения отсутствуют.", 0);
@@ -472,4 +472,3 @@ void MainWindow::on_action_4_triggered()
             QMessageBox::critical(this, "Ошибка очистки БД", "Не удалось очистить базу данных!");
     }
 }
-

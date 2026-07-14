@@ -4,9 +4,9 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QDebug>
-#include "kas/base64.h"
-#include "kas/sha256.h"
-#include "settings/settings.h"
+#include "../kas/base64.h"
+#include "../kas/sha256.h"
+#include "../settings/settings.h"
 
 namespace GlobalVariables {
 
@@ -90,7 +90,7 @@ void AuthDialog::onAuthClicked()
             "Неверный логин или пароль.\n"
             "Осталось попыток: %1"
         }.arg(m_attempts--)
-    );
+        );
 
     m_key_edit->clear();
     m_key_edit->setFocus();
