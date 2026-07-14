@@ -3,6 +3,7 @@
 #include "./password_delegate.h"
 #include "settings/settings.h"
 #include "kas/aes256.h"
+#include "kas/base64.h"
 #include "kas/SafeData.h"
 
 #include <QSqlError>
@@ -138,7 +139,11 @@ loadFromDatabase(QSqlDatabase& db, QTableWidget* table_widget)
 
     const kas::crypto::Aes256 aes {
         SETTINGS().get<settings::tags::private_key_t>(),
-        SETTINGS().get<settings::tags::salt_t>()
+        kas::crypto::base64::encode(
+            SETTINGS().get<settings::tags::salt_t>() +
+            SETTINGS().get<settings::tags::application_author_t>() +
+            SETTINGS().get<settings::tags::application_name_t>()
+        )
     };
     int row {};
     while (query.next())
@@ -200,7 +205,11 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
     int data_base_counter {};
     const kas::crypto::Aes256 aes {
         SETTINGS().get<settings::tags::private_key_t>(),
-        SETTINGS().get<settings::tags::salt_t>()
+        kas::crypto::base64::encode(
+            SETTINGS().get<settings::tags::salt_t>() +
+            SETTINGS().get<settings::tags::application_author_t>() +
+            SETTINGS().get<settings::tags::application_name_t>()
+            )
     };
 
     for (int row{}; row < table_widget->rowCount(); ++row)
