@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTableWidgetItem>
 #include <QSqlDatabase>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,5 +36,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSqlDatabase m_db;
+    QTimer* m_status_bar_timer;
 };
 #endif // MAINWINDOW_H

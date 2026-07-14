@@ -3,16 +3,74 @@
 #include "./password_delegate.h"
 #include "settings/settings.h"
 #include "kas/aes256.h"
+#include "kas/SafeData.h"
 
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QSet>
+#include <QStatusBar>
 
 extern const settings::Settings& SETTINGS();
 
+namespace GlobalVariables
+{
+kas::utils::SafeData<QSet<int>> ACTUAL_UNIQUE_ID_LIST{};
+}
+
 namespace detail
 {
+//-----------------
+
+void addIdToList(int id)
+{
+    GlobalVariables::ACTUAL_UNIQUE_ID_LIST.modify([id](QSet<int>& ids){
+        ids.insert(id);
+    });
+}
+
+//-----------------
+
+void deleteIdFromList(int id)
+{
+    GlobalVariables::ACTUAL_UNIQUE_ID_LIST.modify([id](QSet<int>& ids){
+        if(!ids.remove(id))
+            ids.insert(id);
+    });
+}
+
+//-----------------
+
+void clearIdList()
+{
+    GlobalVariables::ACTUAL_UNIQUE_ID_LIST.modify([](QSet<int>& ids){
+        ids.clear();
+    });
+}
+
+//-----------------
+
+qsizetype getSizeIdList()
+{
+    qsizetype size{};
+    GlobalVariables::ACTUAL_UNIQUE_ID_LIST.modify([&size](QSet<int>& ids){
+        size = ids.size();
+    });
+    return size;
+}
+
+//-----------------
+
+bool isEmptyIdList()
+{
+    bool is_empty{};
+    GlobalVariables::ACTUAL_UNIQUE_ID_LIST.modify([&is_empty](QSet<int>& ids){
+        is_empty = ids.isEmpty();
+    });
+    return is_empty;
+}
+
 //-----------------
 
 QString getDBAbsolutePath()
@@ -106,6 +164,8 @@ loadFromDatabase(QSqlDatabase& db, QTableWidget* table_widget)
         ++row;
     }
 
+    clearIdList();
+
     qDebug() << "Loaded" << row << "records from database";
 
     return true;
@@ -174,6 +234,8 @@ bool saveToDataBase(QSqlDatabase& db, QTableWidget* table_widget )
         return false;
     }
 
+    clearIdList();
+
     qDebug() << "Saved" << data_base_counter << "records to database";
     return true;
 }
@@ -202,8 +264,29 @@ bool clearDataBase(QSqlDatabase& db, QTableWidget* table_widget)
     while (table_widget->rowCount() > 0)
         table_widget->removeRow(0);
 
+    clearIdList();
+
     qDebug() << "Database cleared. Rows deleted:" << query.numRowsAffected();
     return true;
+}
+
+//-----------------
+
+void updateStatusBar(QStatusBar * status_bar)
+{
+    if(!status_bar)
+        return;
+    const auto size_list { getSizeIdList() };
+    if(size_list > 0)
+    {
+        status_bar->setVisible(true);
+        status_bar->showMessage(
+            QString{ "Внимание! У вас есть не сохраненные записи в количестве - %1 шт."}
+            .arg(size_list)
+);
+    }
+    else
+        status_bar->showMessage("Изменения отсутствуют.", 0);
 }
 
 //-----------------
@@ -213,7 +296,8 @@ bool clearDataBase(QSqlDatabase& db, QTableWidget* table_widget)
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_db{}
+    , m_db{},
+    m_status_bar_timer{}
 
 {
     ui->setupUi(this);
@@ -247,6 +331,10 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
     connect(ui->tableWidget, &QTableWidget::itemChanged, this, &MainWindow::onItemChanged);
+
+    m_status_bar_timer = new QTimer { this };
+    connect(m_status_bar_timer, &QTimer::timeout, this,  [this]{ detail::updateStatusBar(ui->statusbar); });
+    m_status_bar_timer->start(500);
 }
 
 MainWindow::~MainWindow()
@@ -289,6 +377,9 @@ void MainWindow::on_pushButton_clicked()
 
     ui->tableWidget->setCurrentCell(row, 1);
     ui->tableWidget->editItem(description);
+
+    detail::addIdToList(new_id);
+
 }
 
 void MainWindow::onItemChanged(QTableWidgetItem* item)
@@ -332,7 +423,10 @@ void MainWindow::on_pushButton_2_clicked()
         ) };
 
     if(res == QMessageBox::Ok)
+    {
         ui->tableWidget->removeRow(row);
+        detail::deleteIdFromList(select_id);
+    }
 }
 
 void MainWindow::on_action_triggered()
