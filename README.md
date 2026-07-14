@@ -16,5 +16,32 @@
 - `public_hash_key` - публичный мастер ключ, сгенерированный из вашего пароля и сгенерированной соли (не из поля 'salt').
 - `salt` - соль использующая в алгоритме шифрования паролей. Конечно не в чистом виде.
 
-Первый вход:
-<img src="images/first.PNG" alt="-" style="width: 300px;"/>
+Все пароли хранятся в базе данных SQLite.
+Путь к базе данных:
+`C:\Users\user\AppData\Roaming\KAS\PasswordManager\`
+
+Первый вход:<br/>
+<img src="images/first.PNG" alt="-" style="width: 500px;"/>
+
+Авторизация в программе:<br/>
+<img src="images/auth.PNG" alt="-" style="width: 500px;"/>
+
+Главное окно:<br/>
+<img src="images/main.PNG" alt="-" style="width: 500px;"/>
+
+Добавление элемента:<br/>
+<img src="images/add.PNG" alt="-" style="width: 500px;"/>
+
+Удаление элемента:<br/>
+<img src="images/remove.PNG" alt="-" style="width: 500px;"/>
+<img src="images/main_after_remove.PNG" alt="-" style="width: 500px;"/>
+
+Редактирование пароля:<br/>
+<img src="images/edit.PNG" alt="-" style="width: 500px;"/>
+
+Меню:<br/>
+<img src="images/menu.PNG" alt="-" style="width: 500px;"/>
+
+Окно после сохранения данных в бд:<br/>
+<img src="images/after_save.PNG" alt="-" style="width: 500px;"/>
+
