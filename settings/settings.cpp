@@ -7,8 +7,9 @@
 namespace GlobalVariables
 {
 static const QStringView APP_CONFIG_PATH { L"config.json" };
-static const QStringView APP_NAME{ L"PasswordManager" };
 static const QStringView ORGANIZATION_NAME{ L"KAS" };
+static const QString APPLICATION_NAME { L"PasswordManager" };
+static const QString APPLICATION_AUTHOR { "Khakimov Andrey" };
 static constexpr int NUMBER_ATTACHMENT_LOAD_SETTINGS { 2 };
 }
 
@@ -77,7 +78,10 @@ Settings::makeSettings() noexcept
 bool Settings::init(Settings& s)
 {
     QCoreApplication::setOrganizationName(GlobalVariables::ORGANIZATION_NAME.toString());
-    QCoreApplication::setApplicationName(GlobalVariables::APP_NAME.toString());
+    QCoreApplication::setApplicationName(GlobalVariables::APPLICATION_NAME);
+
+    s.m_fields.application_name = GlobalVariables::APPLICATION_NAME;
+    s.m_fields.application_author = GlobalVariables::APPLICATION_AUTHOR;
 
     const QString config_path {
         QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)

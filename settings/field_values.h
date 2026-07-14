@@ -14,6 +14,7 @@ struct FieldValues final{
     const QString& get(kas::type_identity<tags::public_hash_key_t>) const &;
     const QString& get(kas::type_identity<tags::private_key_t>) const &;
     const QString& get(kas::type_identity<tags::application_author_t>) const &;
+    const QString& get(kas::type_identity<tags::application_name_t>) const &;
     void set(QString value, kas::type_identity<tags::public_hash_key_t>) &;
 
     const QString& get(kas::type_identity<tags::salt_t>) const &;
@@ -25,6 +26,7 @@ struct FieldValues final{
 
 public:
     QString application_author;
+    QString application_name;
     QString db_name;
     QString public_hash_key;
     QString private_key;

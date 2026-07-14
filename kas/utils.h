@@ -13,5 +13,6 @@ std::optional<QJsonObject> getJsonFromFile(const QString& filename);
 bool saveToFilesystem(const QString& filename, const QByteArray& data);
 bool saveJsonToFile(QJsonObject json, const QString& file_path);
 QByteArray generateRandomBytes(int length);
+
 }
 #endif // UTILS_H

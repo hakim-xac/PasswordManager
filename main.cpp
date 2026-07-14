@@ -8,6 +8,7 @@
 #include "settings/settings.h"
 #include "AuthDialog.h"
 #include "kas/sha256.h"
+#include "kas/base64.h"
 
 namespace GlobalVariables {
 std::unique_ptr<settings::Settings> SETTINGS{};
@@ -50,7 +51,10 @@ int main(int argc, char *argv[])
         GlobalVariables::SETTINGS->set<settings::tags::public_hash_key_t>(
             kas::crypto::Sha256::hashWithSalt(
                 key,
-                SETTINGS().get<settings::tags::salt_t>()));
+                kas::crypto::base64::encode(
+                    SETTINGS().get<settings::tags::application_author_t>() +
+                    SETTINGS().get<settings::tags::application_name_t>()
+                    )));
 
         if(! GlobalVariables::SETTINGS->saveConfig())
             return 3;
@@ -61,7 +65,7 @@ int main(int argc, char *argv[])
         //     return 2;
     }
 
-    GlobalVariables::SETTINGS->print();
+    SETTINGS().print();
 
     AuthDialog ad {};
     if(ad.exec() != QDialog::Accepted)

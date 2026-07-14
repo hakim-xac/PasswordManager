@@ -4,7 +4,8 @@
 #include <QDialogButtonBox>
 #include <QMessageBox>
 #include <QDebug>
-#include "kas/kas.h"
+#include "kas/base64.h"
+#include "kas/sha256.h"
 #include "settings/settings.h"
 
 namespace GlobalVariables {
@@ -23,7 +24,10 @@ verify( const QString& password)
 {
     return kas::crypto::Sha256::verifyPasswordWithSalt(
         password,
-        SETTINGS().get<settings::tags::salt_t>(),
+        kas::crypto::base64::encode(
+            SETTINGS().get<settings::tags::application_author_t>() +
+            SETTINGS().get<settings::tags::application_name_t>()
+            ),
         SETTINGS().get<settings::tags::public_hash_key_t>()
         );
 }

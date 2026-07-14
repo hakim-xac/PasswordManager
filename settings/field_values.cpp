@@ -2,9 +2,6 @@
 #include "../kas/utils.h"
 #include "../kas/base64.h"
 
-namespace settings::GlobalVariables {
-static const QString APPLICATION_AUTHOR { "Khakimov Andrey" };
-}
 namespace settings::detail {
 
 //-----------------
@@ -56,6 +53,14 @@ FieldValues::get(kas::type_identity<tags::application_author_t>) const &
 
 //-----------------
 
+const QString&
+FieldValues::get(kas::type_identity<tags::application_name_t>) const &
+{
+    return application_name;
+}
+
+//-----------------
+
 bool
 FieldValues::initFieldValues(const QJsonObject& json)
 {
@@ -70,7 +75,6 @@ FieldValues::initFieldValues(const QJsonObject& json)
         return false;
     }
 
-    application_author = GlobalVariables::APPLICATION_AUTHOR;
     private_key = kas::crypto::base64::encode( application_author );
     db_name = json["db_name"].toString();
     public_hash_key = json["public_hash_key"].toString();
@@ -88,6 +92,7 @@ void FieldValues::print( QDebug& deb ) const
 {
     deb << "Application settings:\n";
     deb << "\t" << "application_author:" << application_author << "\n";
+    deb << "\t" << "application_name:" << application_name << "\n";
     deb << "\t" << "db_name:" << db_name << "\n";
     deb << "\t" << "public_hash_key:" << public_hash_key << "\n";
     deb << "\t" << "salt:" << salt_base_64 << "\n";
