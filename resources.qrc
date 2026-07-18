@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/files">
         <file>config.json</file>
+        <file>images/icon.png</file>
     </qresource>
 </RCC>

@@ -19,6 +19,7 @@ const settings::Settings& SETTINGS() { return *GlobalVariables::SETTINGS; }
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon(":/files/images/icon.png"));
 
     auto settings_uptr { settings::Settings::makeSettings() };
     if(! settings_uptr)
